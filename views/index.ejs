@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Access Simulation Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #374151;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .room-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .room-card h3 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        
+        .room-info {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .room-info div {
+            margin-bottom: 4px;
+        }
+        
+        .employees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .employee-card {
+            background: white;
+            border-radius: 6px;
+            padding: 10px;
+            border-left: 4px solid #3b82f6;
+            font-size: 14px;
+        }
+        
+        .employee-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .employee-id {
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        .access-level {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+        
+        .level-1 { background: #fef3c7; color: #92400e; }
+        .level-2 { background: #dbeafe; color: #1d4ed8; }
+        .level-3 { background: #e9d5ff; color: #7c3aed; }
+        
+        .employee-details {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        
+        .simulate-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px auto;
+        }
+        
+        .simulate-btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .stat-granted { background: #dcfce7; color: #166534; }
+        .stat-denied { background: #fee2e2; color: #dc2626; }
+        .stat-total { background: #dbeafe; color: #1d4ed8; }
+        .stat-rate { background: #f3e8ff; color: #7c3aed; }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .results-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .results-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .status-granted {
+            color: #059669;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-denied {
+            color: #dc2626;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> HR Access Simulation Tool</h1>
+            <p>Simulate employee access to secure rooms with time windows, access levels, and cooldown periods</p>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-building"></i> Room Configuration</h2>
+            <div class="rooms-grid">
+                <% Object.entries(rooms).forEach(([roomName, config]) => { %>
+                <div class="room-card">
+                    <h3><%= roomName %></h3>
+                    <div class="room-info">
+                        <div><strong>Min Access Level:</strong> <%= config.minAccessLevel %></div>
+                        <div><strong>Open Hours:</strong> <%= config.openTime %> - <%= config.closeTime %></div>
+                        <div><strong>Cooldown:</strong> <%= config.cooldownMinutes %> minutes</div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-users"></i> Employee Access Requests (<%= employees.length %>)</h2>
+            <div class="employees-grid">
+                <% employees.forEach((emp, index) => { %>
+                <div class="employee-card">
+                    <div class="employee-header">
+                        <span class="employee-id"><%= emp.id %></span>
+                        <span class="access-level level-<%= emp.access_level %>">Level <%= emp.access_level %></span>
+                    </div>
+                    <div class="employee-details">
+                        <%= emp.room %> at <%= emp.request_time %>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <form method="POST" action="/simulate" style="text-align: center;">
+            <button type="submit" class="simulate-btn">
+                <i class="fas fa-play"></i>
+                Simulate Access
+            </button>
+        </form>
+
+        <% if (results) { %>
+        <div class="card">
+            <h2><i class="fas fa-chart-bar"></i> Simulation Results</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card stat-granted">
+                    <div class="stat-number"><%= stats.granted %></div>
+                    <div class="stat-label">Granted</div>
+                </div>
+                <div class="stat-card stat-denied">
+                    <div class="stat-number"><%= stats.denied %></div>
+                    <div class="stat-label">Denied</div>
+                </div>
+                <div class="stat-card stat-total">
+                    <div class="stat-number"><%= stats.total %></div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card stat-rate">
+                    <div class="stat-number"><%= stats.successRate %>%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Employee</th>
+                            <th>Access Level</th>
+                            <th>Room</th>
+                            <th>Request Time</th>
+                            <th>Status</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% results.forEach((result) => { %>
+                        <tr>
+                            <td><%= result.index %></td>
+                            <td><strong><%= result.id %></strong></td>
+                            <td>
+                                <span class="access-level level-<%= result.access_level %>">
+                                    Level <%= result.access_level %>
+                                </span>
+                            </td>
+                            <td><%= result.room %></td>
+                            <td><%= result.request_time %></td>
+                            <td>
+                                <% if (result.granted) { %>
+                                <span class="status-granted">
+                                    <i class="fas fa-check-circle"></i>
+                                    GRANTED
+                                </span>
+                                <% } else { %>
+                                <span class="status-denied">
+                                    <i class="fas fa-times-circle"></i>
+                                    DENIED
+                                </span>
+                                <% } %>
+                            </td>
+                            <td><%= result.reason %></td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</body>
+</html>
